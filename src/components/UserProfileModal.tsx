@@ -5,10 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useAuth } from '@/hooks/useAuth';
-import Button from '@/components/Button';
-import Input from '@/components/Input';
 import Modal from '@/components/Modal';
-import { User } from '@/types';
 
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
@@ -75,57 +72,110 @@ export default function UserProfileModal({ isOpen, onClose }: UserProfileModalPr
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Edit Profile">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="First Name"
-            {...register('firstName')}
-            error={errors.firstName?.message}
-            placeholder="Enter first name"
-          />
-          <Input
-            label="Last Name"
-            {...register('lastName')}
-            error={errors.lastName?.message}
-            placeholder="Enter last name"
-          />
-        </div>
-
-        <Input
-          label="Email"
-          type="email"
-          {...register('email')}
-          error={errors.email?.message}
-          placeholder="Enter email address"
-        />
-
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">Account Information</h4>
-          <div className="space-y-1 text-sm text-gray-600">
-            <p><span className="font-medium">Role:</span> {user.role}</p>
-            <p><span className="font-medium">Member since:</span> {new Date(user.createdAt).toLocaleDateString()}</p>
-            <p><span className="font-medium">Last updated:</span> {new Date(user.updatedAt).toLocaleDateString()}</p>
+        {/* User Info Section */}
+        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <h3 className="text-sm font-medium text-gray-700 mb-3">Account Information</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Account ID:</span>
+              <span className="text-gray-900 font-mono">{user.id}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Role:</span>
+              <span className="text-gray-900 capitalize">{user.role}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Member Since:</span>
+              <span className="text-gray-900">
+                {new Date(user.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Last Updated:</span>
+              <span className="text-gray-900">
+                {new Date(user.updatedAt).toLocaleDateString()}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4 border-t">
-          <Button
+        {/* Form Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              First Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter first name"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              {...register('firstName')}
+            />
+            {errors.firstName && (
+              <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Last Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter last name"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              {...register('lastName')}
+            />
+            {errors.lastName && (
+              <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+            )}
+          </div>
+          </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            placeholder="Enter email address"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          )}
+        </div>
+
+        {/* Form Actions */}
+        <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+          <button
             type="button"
-            variant="outline"
             onClick={handleClose}
             disabled={isLoading}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
           >
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
             type="submit"
-            variant="primary"
-            isLoading={isLoading}
             disabled={isLoading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </div>
-      </form>
+              {isLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Updating...
+                </span>
+              ) : (
+                'Update Profile'
+              )}
+            </button>
+          </div>
+        </form>
     </Modal>
   );
 }

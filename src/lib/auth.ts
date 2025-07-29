@@ -1,95 +1,45 @@
 import { User, LoginCredentials, SignupData } from '@/types';
-
-// Mock users for demo purposes
-const DEMO_USERS: User[] = [
-  {
-    id: '1',
-    email: 'demo@workcity.com',
-    firstName: 'Demo',
-    lastName: 'User',
-    role: 'admin',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    email: 'user@workcity.com',
-    firstName: 'Test',
-    lastName: 'User',
-    role: 'user',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-// Demo passwords (in real app, these would be hashed)
-const DEMO_PASSWORDS: { [email: string]: string } = {
-  'demo@workcity.com': 'password',
-  'user@workcity.com': 'password',
-};
+import { api } from './api';
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const user = DEMO_USERS.find(u => u.email === credentials.email);
-    const validPassword = DEMO_PASSWORDS[credentials.email];
-
-    if (!user || validPassword !== credentials.password) {
-      throw new Error('Invalid email or password');
+    try {
+      const response = await api.post<{ user: User; token: string }>('/auth/login', credentials);
+      
+      // Store token and user data
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Invalid email or password');
     }
-
-    const token = `demo-token-${user.id}-${Date.now()}`;
-    
-    // Store token and user data
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    
-    return { user, token };
   },
 
   async signup(userData: SignupData): Promise<{ user: User; token: string }> {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Check if user already exists
-    const existingUser = DEMO_USERS.find(u => u.email === userData.email);
-    if (existingUser) {
-      throw new Error('User with this email already exists');
+    try {
+      const response = await api.post<{ user: User; token: string }>('/auth/signup', userData);
+      
+      // Store token and user data
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to create account');
     }
-
-    // Create new user
-    const newUser: User = {
-      id: `${Date.now()}`,
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      role: 'user',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Add to demo users (in memory only)
-    DEMO_USERS.push(newUser);
-    DEMO_PASSWORDS[userData.email] = userData.password;
-
-    const token = `demo-token-${newUser.id}-${Date.now()}`;
-    
-    // Store token and user data
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(newUser));
-    
-    return { user: newUser, token };
   },
 
   async logout(): Promise<void> {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Clear local storage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      // Even if the API call fails, we should still clear local storage
+      console.error('Logout API call failed:', error);
+    } finally {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+    }
   },
 
   async getCurrentUser(): Promise<User | null> {
@@ -97,44 +47,58 @@ export const authService = {
       const token = localStorage.getItem('authToken');
       if (!token) return null;
 
-      // In a real app, this would validate the token with the server
-      const userString = localStorage.getItem('user');
-      return userString ? JSON.parse(userString) : null;
+      const response = await api.get<User>('/auth/me');
+      return response.data;
     } catch (error) {
-      // Clear invalid data
+      // If API call fails, remove invalid token
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       return null;
     }
   },
 
-  getStoredUser(): User | null {
+  async updateProfile(userData: Partial<User>): Promise<User> {
     try {
-      const userString = localStorage.getItem('user');
-      return userString ? JSON.parse(userString) : null;
+      const response = await api.put<User>('/auth/profile', userData);
+      
+      // Update local storage with new user data
+      localStorage.setItem('user', JSON.stringify(response.data));
+      
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to update profile');
+    }
+  },
+
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    try {
+      await api.put('/auth/change-password', { oldPassword, newPassword });
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to change password');
+    }
+  },
+
+  getCurrentUserFromStorage(): User | null {
+    try {
+      const userStr = localStorage.getItem('user');
+      return userStr ? JSON.parse(userStr) : null;
     } catch (error) {
       return null;
     }
   },
 
+  getTokenFromStorage(): string | null {
+    return localStorage.getItem('authToken');
+  },
+
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('authToken');
+    const token = this.getTokenFromStorage();
+    const user = this.getCurrentUserFromStorage();
+    return !!(token && user);
   },
 
-  async updateProfile(updatedUser: User): Promise<User> {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Update the stored user data
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    
-    // In a real app, this would update the user on the server
-    // Update the demo users array if this is a demo user
-    const userIndex = DEMO_USERS.findIndex(u => u.id === updatedUser.id);
-    if (userIndex !== -1) {
-      DEMO_USERS[userIndex] = updatedUser;
-    }
-
-    return updatedUser;
-  },
+  // Legacy method for compatibility
+  getStoredUser(): User | null {
+    return this.getCurrentUserFromStorage();
+  }
 };

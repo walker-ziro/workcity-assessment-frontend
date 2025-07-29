@@ -45,7 +45,8 @@ const LoginPage: React.FC = () => {
     try {
       setError(null);
       await login(data.email, data.password);
-      router.push('/');
+      // Force a page reload to ensure auth state is properly updated
+      window.location.href = '/';
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
     }

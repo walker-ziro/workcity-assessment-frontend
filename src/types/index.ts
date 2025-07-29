@@ -16,7 +16,12 @@ export interface Client {
   email: string;
   phone?: string;
   company: string;
+  position?: string;
   address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
   status: 'active' | 'inactive';
   notes?: string;
   createdAt: string;

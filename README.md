@@ -12,14 +12,16 @@ A comprehensive React/Next.js application for managing clients and projects, bui
 - **Client Management**: Create, read, update, and delete client information
 - **Project Tracking**: Manage projects with status tracking, budgets, and timelines
 - **User Authentication**: Secure login/signup system with JWT tokens
+- **Backend Integration**: REST API integration with authentication
 - **Responsive Design**: Mobile-first design with Tailwind CSS
 - **Accessibility**: WCAG compliant with proper ARIA attributes
 - **TypeScript**: Full type safety throughout the application
 - **Testing**: Unit tests with Jest and React Testing Library
+- **Development Tools**: Built-in system status and debugging tools
 
 ### ✅ Implementation Status
 
-- [x] Authentication system with demo login
+- [x] Authentication system with backend API integration
 - [x] Responsive navigation bar
 - [x] Dashboard with client/project stats
 - [x] Client management pages
@@ -30,6 +32,8 @@ A comprehensive React/Next.js application for managing clients and projects, bui
 - [x] Unit test setup
 - [x] Accessibility features (ARIA labels, keyboard navigation)
 - [x] Mobile-responsive design
+- [x] Backend API integration
+- [x] Development tools and system status monitoring
 
 ## 📋 Pages
 
@@ -87,32 +91,58 @@ src/
     └── index.ts
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
+- Node.js 18+ installed
+- Backend server running (see [Backend Integration Guide](./BACKEND_INTEGRATION.md))
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/walker-ziro/workcity-assessment-frontend.git
-cd workcity-assessment-frontend
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/walker-ziro/workcity-assessment-frontend.git
+   cd workcity-assessment-frontend
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Start the development server:
-```bash
-npm run dev
-```
+3. **Configure environment**
+   ```bash
+   # Copy environment example
+   cp .env.example .env.local
+   
+   # Edit .env.local with your backend URL
+   NEXT_PUBLIC_API_URL=http://localhost:3001/api
+   ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Backend Integration
+
+This frontend requires a backend API to function properly. See the [Backend Integration Guide](./BACKEND_INTEGRATION.md) for detailed setup instructions.
+
+**Quick Backend Setup:**
+1. Ensure your backend server is running on `http://localhost:3001`
+2. Use the development tools (⚙️ icon) to check system status
+3. Verify API connectivity before using the application
+
+### Development Tools
+
+In development mode, you'll see a gear icon (⚙️) in the bottom-right corner. Click it to access:
+- System status monitoring
+- API connectivity checks
+- Local storage management
+- Environment information
 
 ## 📝 Available Scripts
 

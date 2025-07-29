@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { classNames } from '@/lib/utils';
 
 interface ModalProps {
   isOpen: boolean;
@@ -35,49 +34,34 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 overflow-y-auto"
-      aria-labelledby="modal-title"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20">
+        {/* Backdrop */}
         <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          className="fixed inset-0 bg-black bg-opacity-50"
           onClick={handleBackdropClick}
-          aria-hidden="true"
         />
 
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
-        >
-          &#8203;
-        </span>
-
-        <div
-          className={classNames(
-            'inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full',
-            sizeClasses[size]
-          )}
-        >
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3
-                className="text-lg font-medium text-gray-900"
-                id="modal-title"
-              >
+        {/* Modal Content */}
+        <div className={`relative bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]} max-h-[90vh] overflow-y-auto`}>
+          {/* Header */}
+          {title && (
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
                 {title}
               </h3>
               <button
                 type="button"
-                className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-1"
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-md"
                 onClick={onClose}
-                aria-label="Close modal"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
+          )}
+          
+          {/* Content */}
+          <div className="p-6 bg-white">
             {children}
           </div>
         </div>

@@ -246,6 +246,7 @@ export default function ClientDashboard() {
         <AddEditClientForm
           onSuccess={() => setIsAddModalOpen(false)}
           onCancel={() => setIsAddModalOpen(false)}
+          isModal={true}
         />
       </Modal>
 
@@ -269,6 +270,7 @@ export default function ClientDashboard() {
             setIsEditModalOpen(false)
             setSelectedClient(null)
           }}
+          isModal={true}
         />
       </Modal>
 

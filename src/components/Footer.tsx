@@ -3,9 +3,7 @@ import {
   UserGroupIcon, 
   BriefcaseIcon, 
   ChartBarIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-  MapPinIcon
+  EnvelopeIcon
 } from '@heroicons/react/24/outline'
 
 const Footer = () => {

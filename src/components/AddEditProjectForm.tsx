@@ -6,20 +6,17 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useProjects } from '@/hooks/useProjects'
 import { useClients } from '@/hooks/useClients'
-import Button from '@/components/Button'
-import Input from '@/components/Input'
-import Select from '@/components/Select'
 import type { Project } from '@/types'
 
 const projectSchema = yup.object({
   name: yup.string().required('Project name is required'),
   description: yup.string().required('Description is required'),
   clientId: yup.string().required('Client is required'),
-  status: yup.string().oneOf(['planning', 'in-progress', 'completed', 'on-hold', 'cancelled']).required('Status is required'),
+  status: yup.string().oneOf(['planning', 'in-progress', 'completed', 'on-hold', 'cancelled'] as const).required('Status is required'),
   startDate: yup.string().required('Start date is required'),
-  endDate: yup.string().optional(),
-  budget: yup.number().positive('Budget must be positive').optional(),
-  technologies: yup.string().optional(),
+  endDate: yup.string().notRequired(),
+  budget: yup.number().min(0, 'Budget must be positive').notRequired(),
+  technologies: yup.string().notRequired(),
 })
 
 type ProjectFormData = {
@@ -37,6 +34,7 @@ interface AddEditProjectFormProps {
   project?: Project | null
   onSuccess: () => void
   onCancel: () => void
+  isModal?: boolean
 }
 
 const statusOptions = [
@@ -53,11 +51,6 @@ export function AddEditProjectForm({ project, onSuccess, onCancel }: AddEditProj
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isEditing = !!project
 
-  const clientOptions = clients.map(client => ({
-    value: client.id,
-    label: `${client.name} (${client.company})`
-  }))
-
   const {
     register,
     handleSubmit,
@@ -73,7 +66,7 @@ export function AddEditProjectForm({ project, onSuccess, onCancel }: AddEditProj
       status: 'planning',
       startDate: '',
       endDate: '',
-      budget: undefined,
+      budget: 0,
       technologies: '',
     },
   })
@@ -85,9 +78,9 @@ export function AddEditProjectForm({ project, onSuccess, onCancel }: AddEditProj
       setValue('description', project.description)
       setValue('clientId', project.clientId)
       setValue('status', project.status)
-      setValue('startDate', project.startDate.split('T')[0]) // Convert to YYYY-MM-DD format
-      setValue('endDate', project.endDate ? project.endDate.split('T')[0] : '')
-      setValue('budget', project.budget || undefined)
+      setValue('startDate', project.startDate ? new Date(project.startDate).toISOString().split('T')[0] : '')
+      setValue('endDate', project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : '')
+      setValue('budget', project.budget || 0)
       setValue('technologies', project.technologies?.join(', ') || '')
     }
   }, [project, setValue])
@@ -97,8 +90,9 @@ export function AddEditProjectForm({ project, onSuccess, onCancel }: AddEditProj
     try {
       const projectData = {
         ...data,
+        technologies: data.technologies ? data.technologies.split(',').map(tech => tech.trim()).filter(Boolean) : [],
         budget: data.budget || undefined,
-        technologies: data.technologies ? data.technologies.split(',').map(tech => tech.trim()).filter(Boolean) : undefined,
+        endDate: data.endDate || undefined,
       }
 
       if (isEditing && project) {
@@ -117,126 +111,183 @@ export function AddEditProjectForm({ project, onSuccess, onCancel }: AddEditProj
 
   return (
     <div className="bg-white">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Project Name */}
-        <div className="md:col-span-2">
-          <Input
-            label="Project Name"
-            type="text"
-            placeholder="Enter project name"
-            error={errors.name?.message}
-            {...register('name')}
-          />
-        </div>
-
-        {/* Client */}
-        <div className="md:col-span-2">
-          <Select
-            label="Client"
-            options={[
-              { value: '', label: 'Select a client' },
-              ...clientOptions
-            ]}
-            error={errors.clientId?.message}
-            {...register('clientId')}
-          />
-        </div>
-
-        {/* Status */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Basic Information */}
         <div>
-          <Select
-            label="Status"
-            options={statusOptions}
-            error={errors.status?.message}
-            {...register('status')}
-          />
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Project Details</h3>
+          <div className="space-y-4">
+            {/* Project Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Project Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter project name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                {...register('name')}
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+              )}
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
+              </label>
+              <textarea
+                rows={3}
+                placeholder="Describe the project..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+                {...register('description')}
+              />
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+              )}
+            </div>
+
+            {/* Client */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Client
+              </label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                {...register('clientId')}
+              >
+                <option value="">Select a client</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name} - {client.company}
+                  </option>
+                ))}
+              </select>
+              {errors.clientId && (
+                <p className="mt-1 text-sm text-red-600">{errors.clientId.message}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Status
+                </label>
+                <select
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  {...register('status')}
+                >
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.status && (
+                  <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Start Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  {...register('startDate')}
+                />
+                {errors.startDate && (
+                  <p className="mt-1 text-sm text-red-600">{errors.startDate.message}</p>
+                )}
+              </div>
+
+              {/* End Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  End Date (Optional)
+                </label>
+                <input
+                  type="date"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  {...register('endDate')}
+                />
+                {errors.endDate && (
+                  <p className="mt-1 text-sm text-red-600">{errors.endDate.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Budget */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Budget (Optional)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                {...register('budget', { valueAsNumber: true })}
+              />
+              {errors.budget && (
+                <p className="mt-1 text-sm text-red-600">{errors.budget.message}</p>
+              )}
+            </div>
+
+            {/* Technologies */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Technologies (Optional)
+              </label>
+              <input
+                type="text"
+                placeholder="React, TypeScript, Node.js (comma separated)"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                {...register('technologies')}
+              />
+              {errors.technologies && (
+                <p className="mt-1 text-sm text-red-600">{errors.technologies.message}</p>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Budget */}
-        <div>
-          <Input
-            label="Budget"
-            type="number"
-            placeholder="0"
-            error={errors.budget?.message}
-            {...register('budget', { 
-              setValueAs: (value) => value === '' ? undefined : parseFloat(value) 
-            })}
-          />
+        {/* Form Actions */}
+        <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+              </span>
+            ) : (
+              <span>{isEditing ? 'Update Project' : 'Save Project'}</span>
+            )}
+          </button>
         </div>
-
-        {/* Start Date */}
-        <div>
-          <Input
-            label="Start Date"
-            type="date"
-            error={errors.startDate?.message}
-            {...register('startDate')}
-          />
-        </div>
-
-        {/* End Date */}
-        <div>
-          <Input
-            label="End Date"
-            type="date"
-            error={errors.endDate?.message}
-            {...register('endDate')}
-          />
-        </div>
-
-        {/* Technologies */}
-        <div className="md:col-span-2">
-          <Input
-            label="Technologies"
-            type="text"
-            placeholder="React, Node.js, PostgreSQL (comma separated)"
-            error={errors.technologies?.message}
-            {...register('technologies')}
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Enter technologies separated by commas
-          </p>
-        </div>
-
-        {/* Description */}
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Description
-          </label>
-          <textarea
-            rows={4}
-            className="w-full px-3 py-3 text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-colors duration-200"
-            placeholder="Describe the project goals, requirements, and deliverables..."
-            {...register('description')}
-          />
-          {errors.description && (
-            <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Form Actions */}
-      <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting}
-          isLoading={isSubmitting}
-        >
-          {isEditing ? 'Update Project' : 'Create Project'}
-        </Button>
-      </div>
-    </form>
+      </form>
     </div>
   )
 }

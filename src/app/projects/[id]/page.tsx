@@ -347,6 +347,7 @@ export default function ProjectDetail() {
           project={project}
           onSuccess={() => setIsEditModalOpen(false)}
           onCancel={() => setIsEditModalOpen(false)}
+          isModal={true}
         />
       </Modal>
     </div>

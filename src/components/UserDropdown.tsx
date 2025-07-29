@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@/hooks/useAuth';
 import UserProfileModal from './UserProfileModal';
+import SettingsModal from './SettingsModal';
 
 interface UserDropdownProps {
   className?: string;
@@ -18,6 +19,7 @@ interface UserDropdownProps {
 export default function UserDropdown({ className = '' }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, logout } = useAuth();
 
@@ -43,6 +45,11 @@ export default function UserDropdown({ className = '' }: UserDropdownProps) {
   const handleEditProfile = () => {
     setIsOpen(false);
     setIsProfileModalOpen(true);
+  };
+
+  const handleSettings = () => {
+    setIsOpen(false);
+    setIsSettingsOpen(true);
   };
 
   if (!user) return null;
@@ -89,7 +96,7 @@ export default function UserDropdown({ className = '' }: UserDropdownProps) {
               </button>
 
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleSettings}
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
               >
                 <Cog6ToothIcon className="h-4 w-4 mr-3 text-gray-400" />
@@ -114,6 +121,12 @@ export default function UserDropdown({ className = '' }: UserDropdownProps) {
       <UserProfileModal 
         isOpen={isProfileModalOpen} 
         onClose={() => setIsProfileModalOpen(false)} 
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </>
   );

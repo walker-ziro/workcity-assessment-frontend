@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { useProjects } from '@/hooks/useProjects'
 import { useClients } from '@/hooks/useClients'
 import Button from '@/components/Button'
-import Input from '@/components/Input'
-import Select from '@/components/Select'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import Modal from '@/components/Modal'
 import { AddEditProjectForm } from '@/components/AddEditProjectForm'
@@ -121,30 +119,39 @@ export default function ProjectDashboard() {
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
           </div>
-          <Input
+          <input
             type="text"
             placeholder="Search projects..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <Select
-            options={statusOptions}
+          <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="min-w-40"
-          />
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as 'all' | 'active' | 'completed' | 'on-hold')}
+            className="min-w-40 px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           
-          <Select
-            options={clientOptions}
+          <select
             value={clientFilter}
-            onChange={(e) => setClientFilter(e.target.value)}
-            className="min-w-40"
-          />
-          
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setClientFilter(e.target.value)}
+            className="min-w-40 px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            {clientOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <Button
             onClick={() => setIsAddModalOpen(true)}
             className="flex items-center gap-2 whitespace-nowrap"
@@ -343,6 +350,7 @@ export default function ProjectDashboard() {
         <AddEditProjectForm
           onSuccess={() => setIsAddModalOpen(false)}
           onCancel={() => setIsAddModalOpen(false)}
+          isModal={true}
         />
       </Modal>
 
@@ -366,6 +374,7 @@ export default function ProjectDashboard() {
             setIsEditModalOpen(false)
             setSelectedProject(null)
           }}
+          isModal={true}
         />
       </Modal>
 
