@@ -36,6 +36,8 @@ const LoginPage: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: yupResolver(schema),
@@ -50,6 +52,12 @@ const LoginPage: React.FC = () => {
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
     }
+  };
+
+  const fillDemoCredentials = () => {
+    setValue('email', 'demo@workcity.com');
+    setValue('password', 'demo123');
+    clearErrors(); // Clear any existing validation errors
   };
 
   return (
@@ -147,12 +155,22 @@ const LoginPage: React.FC = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Demo Credentials</span>
+                <span className="px-2 bg-gray-50 text-gray-500">or</span>
               </div>
             </div>
-            <div className="mt-2 text-center text-sm text-gray-600">
-              <p>Email: demo@workcity.com</p>
-              <p>Password: demo123</p>
+            <div className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                onClick={fillDemoCredentials}
+                className="w-full"
+              >
+                Try Demo
+              </Button>
+              <p className="mt-2 text-center text-xs text-gray-500">
+                Click to auto-fill demo credentials for testing
+              </p>
             </div>
           </div>
         </form>

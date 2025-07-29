@@ -3,6 +3,28 @@ import { api } from './api';
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
+    // Handle demo credentials locally
+    if (credentials.email === 'demo@workcity.com' && credentials.password === 'demo123') {
+      const demoUser: User = {
+        id: 'demo-user-1',
+        email: 'demo@workcity.com',
+        firstName: 'Demo',
+        lastName: 'User',
+        role: 'user',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      const demoToken = 'demo-token-' + Date.now();
+      
+      // Store token and user data
+      localStorage.setItem('authToken', demoToken);
+      localStorage.setItem('user', JSON.stringify(demoUser));
+      
+      return { user: demoUser, token: demoToken };
+    }
+
+    // For non-demo credentials, use API
     try {
       const response = await api.post<{ user: User; token: string }>('/auth/login', credentials);
       
@@ -17,6 +39,11 @@ export const authService = {
   },
 
   async signup(userData: SignupData): Promise<{ user: User; token: string }> {
+    // Note: Demo signup is not typically needed, but we'll handle it for completeness
+    if (userData.email === 'demo@workcity.com') {
+      throw new Error('Cannot create account with demo email address');
+    }
+
     try {
       const response = await api.post<{ user: User; token: string }>('/auth/signup', userData);
       
@@ -32,7 +59,12 @@ export const authService = {
 
   async logout(): Promise<void> {
     try {
-      await api.post('/auth/logout');
+      const token = localStorage.getItem('authToken');
+      
+      // Skip API call for demo tokens
+      if (!token?.startsWith('demo-token-')) {
+        await api.post('/auth/logout');
+      }
     } catch (error) {
       // Even if the API call fails, we should still clear local storage
       console.error('Logout API call failed:', error);
@@ -47,6 +79,16 @@ export const authService = {
       const token = localStorage.getItem('authToken');
       if (!token) return null;
 
+      // Handle demo token
+      if (token.startsWith('demo-token-')) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          return JSON.parse(storedUser);
+        }
+        return null;
+      }
+
+      // For non-demo tokens, use API
       const response = await api.get<User>('/auth/me');
       return response.data;
     } catch (error) {
@@ -59,6 +101,20 @@ export const authService = {
 
   async updateProfile(userData: Partial<User>): Promise<User> {
     try {
+      const token = localStorage.getItem('authToken');
+      
+      // Handle demo user profile updates locally
+      if (token?.startsWith('demo-token-')) {
+        const currentUser = this.getCurrentUserFromStorage();
+        if (currentUser) {
+          const updatedUser = { ...currentUser, ...userData, updatedAt: new Date().toISOString() };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          return updatedUser;
+        }
+        throw new Error('Demo user not found');
+      }
+
+      // For non-demo users, use API
       const response = await api.put<User>('/auth/profile', userData);
       
       // Update local storage with new user data

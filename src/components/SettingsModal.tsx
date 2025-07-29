@@ -13,7 +13,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState(true);
   const [emailUpdates, setEmailUpdates] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
   const [language, setLanguage] = useState('en');
   const [timezone, setTimezone] = useState('UTC-5');
 
@@ -24,7 +23,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     console.log('Settings saved:', {
       notifications,
       emailUpdates,
-      darkMode,
       language,
       timezone
     });
@@ -33,18 +31,18 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Settings" size="lg">
-      <div className="bg-slate-700 rounded-lg -m-6 p-6 text-white">
+      <div className="bg-white rounded-lg -m-6 p-6 text-gray-900">
         <div className="space-y-6">
           {/* Notifications Section */}
           <div>
-            <h3 className="text-lg font-medium text-white mb-4">Notifications</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Notifications</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-gray-300">Push Notifications</label>
+                <label className="text-gray-700">Push Notifications</label>
                 <button
                   onClick={() => setNotifications(!notifications)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    notifications ? 'bg-blue-600' : 'bg-gray-600'
+                    notifications ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
                 >
                   <span
@@ -55,11 +53,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </button>
               </div>
               <div className="flex items-center justify-between">
-                <label className="text-gray-300">Email Updates</label>
+                <label className="text-gray-700">Email Updates</label>
                 <button
                   onClick={() => setEmailUpdates(!emailUpdates)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    emailUpdates ? 'bg-blue-600' : 'bg-gray-600'
+                    emailUpdates ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
                 >
                   <span
@@ -72,40 +70,18 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          {/* Appearance Section */}
-          <div>
-            <h3 className="text-lg font-medium text-white mb-4">Appearance</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-gray-300">Dark Mode</label>
-                <button
-                  onClick={() => setDarkMode(!darkMode)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    darkMode ? 'bg-blue-600' : 'bg-gray-600'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      darkMode ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Language & Region */}
           <div>
-            <h3 className="text-lg font-medium text-white mb-4">Language & Region</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Language & Region</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Language
                 </label>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="en">English</option>
                   <option value="es">Spanish</option>
@@ -114,13 +90,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Timezone
                 </label>
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="UTC-12">UTC-12 (Baker Island)</option>
                   <option value="UTC-11">UTC-11 (American Samoa)</option>
@@ -154,14 +130,14 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
           {/* Privacy Section */}
           <div>
-            <h3 className="text-lg font-medium text-white mb-4">Privacy</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Privacy</h3>
             <div className="space-y-3">
-              <div className="bg-slate-600 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Data Collection</h4>
-                <p className="text-sm text-gray-400 mb-3">
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Data Collection</h4>
+                <p className="text-sm text-gray-600 mb-3">
                   We collect minimal data to improve your experience. You can review and delete your data at any time.
                 </p>
-                <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">
+                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
                   View Privacy Policy
                 </button>
               </div>
@@ -169,11 +145,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t border-slate-600">
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-slate-500 text-gray-300 rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             >
               Cancel
             </button>

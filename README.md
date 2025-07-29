@@ -177,7 +177,7 @@ npm run test:coverage
 - Fixed by adding `suppressHydrationWarning` to prevent browser extension conflicts
 
 **Authentication Issues:**
-- Use the correct demo credentials: `demo@workcity.com` / `password`
+- Use the "Try Demo" button on the login page to auto-fill demo credentials
 - Clear localStorage if experiencing login issues: `localStorage.clear()`
 
 **Build Errors:**
@@ -186,11 +186,13 @@ npm run test:coverage
 
 ## 🔑 Authentication
 
-The application includes a mock authentication system for demonstration:
+The application includes a functional demo authentication system:
 
-**Demo Credentials:**
-- Email: `demo@workcity.com`
-- Password: `password`
+**Demo Access:**
+- Click the "Try Demo" button on the login page to automatically fill demo credentials
+- Demo authentication works locally without requiring a backend API
+- This allows you to test the application features immediately
+- For production use, the authentication system will seamlessly integrate with your backend API
 
 ## 🎨 Design System
 

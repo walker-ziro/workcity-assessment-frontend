@@ -1,16 +1,21 @@
-import { renderHook, waitFor } from '@testing-library/react'
-import { useAuth } from '@/hooks/useAuth'
-import { authService } from '@/lib/auth'
+import { renderHook, waitFor, act } from '@testing-library/react'
 
-// Mock the auth service
+// Mock the auth service before importing
 jest.mock('@/lib/auth', () => ({
   authService: {
     login: jest.fn(),
     signup: jest.fn(),
     logout: jest.fn(),
     getCurrentUser: jest.fn(),
+    getStoredUser: jest.fn(),
+    isAuthenticated: jest.fn(),
+    clearStorage: jest.fn(),
+    updateProfile: jest.fn(),
   },
 }))
+
+import { useAuth } from '@/hooks/useAuth'
+import { authService } from '@/lib/auth'
 
 describe('useAuth', () => {
   const mockAuthService = authService as jest.Mocked<typeof authService>
@@ -18,6 +23,9 @@ describe('useAuth', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     localStorage.clear()
+    // Set up default mock returns
+    mockAuthService.getStoredUser.mockReturnValue(null)
+    mockAuthService.isAuthenticated.mockReturnValue(false)
   })
 
   it('should initialize with no user when no token exists', () => {
@@ -47,28 +55,29 @@ describe('useAuth', () => {
 
     const { result } = renderHook(() => useAuth())
 
-    await result.current.login('test@example.com', 'password')
+    await act(async () => {
+      await result.current.login('test@example.com', 'password')
+    })
 
     await waitFor(() => {
       expect(result.current.user).toEqual(mockUser)
       expect(result.current.isAuthenticated).toBe(true)
     })
 
-    expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'password')
-    expect(localStorage.getItem('token')).toBe('fake-token')
+    expect(mockAuthService.login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password' })
   })
 
   it('should logout successfully', async () => {
-    // Set up initial authenticated state
-    localStorage.setItem('token', 'fake-token')
-    
     const { result } = renderHook(() => useAuth())
 
-    await result.current.logout()
+    await act(async () => {
+      await result.current.logout()
+    })
 
-    expect(result.current.user).toBeNull()
-    expect(result.current.isAuthenticated).toBe(false)
-    expect(localStorage.getItem('token')).toBeNull()
+    await waitFor(() => {
+      expect(result.current.user).toBeNull()
+      expect(result.current.isAuthenticated).toBe(false)
+    })
     expect(mockAuthService.logout).toHaveBeenCalled()
   })
 
@@ -78,11 +87,15 @@ describe('useAuth', () => {
 
     const { result } = renderHook(() => useAuth())
 
-    await expect(
-      result.current.login('test@example.com', 'wrong-password')
-    ).rejects.toThrow('Invalid credentials')
+    await act(async () => {
+      await expect(
+        result.current.login('test@example.com', 'wrong-password')
+      ).rejects.toThrow('Invalid credentials')
+    })
 
-    expect(result.current.user).toBeNull()
-    expect(result.current.isAuthenticated).toBe(false)
+    await waitFor(() => {
+      expect(result.current.user).toBeNull()
+      expect(result.current.isAuthenticated).toBe(false)
+    })
   })
 })

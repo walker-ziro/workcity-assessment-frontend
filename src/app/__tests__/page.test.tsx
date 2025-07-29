@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import HomePage from '../page'
 
-// Mock the auth hook
+// Mock the hooks before importing the component
 jest.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
     user: null,
@@ -31,19 +30,22 @@ jest.mock('@/hooks/useProjects', () => ({
   }),
 }))
 
+import HomePage from '../page'
+
 describe('HomePage', () => {
   it('renders welcome message for unauthenticated users', () => {
     render(<HomePage />)
     
-    expect(screen.getByText(/Welcome to Workcity Assessment/i)).toBeInTheDocument()
+    expect(screen.getByText('Welcome to')).toBeInTheDocument()
+    expect(screen.getByText('Workcity Assessment')).toBeInTheDocument()
     expect(screen.getByText(/Manage your clients and projects efficiently/i)).toBeInTheDocument()
   })
 
   it('displays main features', () => {
     render(<HomePage />)
     
-    expect(screen.getByText(/Client Management/i)).toBeInTheDocument()
-    expect(screen.getByText(/Project Tracking/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Client Management/i)).toHaveLength(2) // One in features, one in navigation
+    expect(screen.getAllByText(/Project Tracking/i)).toHaveLength(3) // Features, navigation, and testimonials
     expect(screen.getByText(/User Dashboard/i)).toBeInTheDocument()
   })
 

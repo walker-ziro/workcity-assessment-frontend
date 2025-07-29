@@ -34,7 +34,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a 
-                href="mailto:demo@workcity.com" 
+                href="mailto:contact@workcity.com" 
                 className="text-gray-400 hover:text-blue-400 transition-colors"
                 aria-label="Email"
               >
