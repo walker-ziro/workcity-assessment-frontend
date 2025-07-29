@@ -2,6 +2,23 @@
   "name": "workcity-assessment-frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "A comprehensive React/Next.js application for managing clients and projects, built with modern web technologies and following accessibility standards.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/walker-ziro/workcity-assessment-frontend.git"
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "client-management",
+    "project-management",
+    "accessibility",
+    "responsive-design"
+  ],
+  "author": "walker-ziro",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
