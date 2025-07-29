@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "name": "workcity-assessment-frontend",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "functions": {
+    "pages/api/**/*.ts": {
+      "memory": 128
+    }
+  }
+}
