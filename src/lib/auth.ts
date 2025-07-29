@@ -24,8 +24,8 @@ const DEMO_USERS: User[] = [
 
 // Demo passwords (in real app, these would be hashed)
 const DEMO_PASSWORDS: { [email: string]: string } = {
-  'demo@workcity.com': 'demo123',
-  'user@workcity.com': 'user123',
+  'demo@workcity.com': 'password',
+  'user@workcity.com': 'password',
 };
 
 export const authService = {
