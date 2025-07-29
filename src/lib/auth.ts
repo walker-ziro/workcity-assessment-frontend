@@ -120,4 +120,21 @@ export const authService = {
   isAuthenticated(): boolean {
     return !!localStorage.getItem('authToken');
   },
+
+  async updateProfile(updatedUser: User): Promise<User> {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Update the stored user data
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    // In a real app, this would update the user on the server
+    // Update the demo users array if this is a demo user
+    const userIndex = DEMO_USERS.findIndex(u => u.id === updatedUser.id);
+    if (userIndex !== -1) {
+      DEMO_USERS[userIndex] = updatedUser;
+    }
+
+    return updatedUser;
+  },
 };

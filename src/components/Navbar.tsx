@@ -15,6 +15,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { classNames } from '@/lib/utils';
 import Button from './Button';
+import UserDropdown from './UserDropdown';
 
 const navigation = [
   { name: 'Home', href: '/', icon: HomeIcon },
@@ -76,22 +77,7 @@ const Navbar: React.FC = () => {
 
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
             {isAuthenticated ? (
-              <>
-                <div className="flex items-center space-x-2">
-                  <UserCircleIcon className="h-6 w-6 text-gray-400" />
-                  <span className="text-sm text-gray-700">
-                    {user?.firstName} {user?.lastName}
-                  </span>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  leftIcon={<ArrowRightOnRectangleIcon className="h-4 w-4" />}
-                >
-                  Logout
-                </Button>
-              </>
+              <UserDropdown />
             ) : (
               <div className="space-x-2">
                 <Link href="/login">

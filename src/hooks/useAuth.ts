@@ -112,6 +112,22 @@ export const useAuth = () => {
     }
   }, []);
 
+  const updateProfile = useCallback(async (updatedUser: User) => {
+    setAuthState(prev => ({ ...prev, isLoading: true }));
+    try {
+      const user = await authService.updateProfile(updatedUser);
+      setAuthState({
+        user,
+        isLoading: false,
+        isAuthenticated: true,
+      });
+      return user;
+    } catch (error) {
+      setAuthState(prev => ({ ...prev, isLoading: false }));
+      throw error;
+    }
+  }, []);
+
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
@@ -121,6 +137,7 @@ export const useAuth = () => {
     login,
     signup,
     logout,
+    updateProfile,
     checkAuthStatus,
   };
 };
