@@ -4,6 +4,8 @@ import { useAuth } from '@/hooks/useAuth'
 import { useClients } from '@/hooks/useClients'
 import { useProjects } from '@/hooks/useProjects'
 import Button from '@/components/Button'
+import AboutSection from '@/components/AboutSection'
+import TestimonialsSection from '@/components/TestimonialsSection'
 import { 
   UserGroupIcon, 
   BriefcaseIcon, 
@@ -211,6 +213,12 @@ export default function HomePage() {
             </p>
           </div>
         </div>
+
+        {/* About Section */}
+        <AboutSection />
+
+        {/* Testimonials Section */}
+        <TestimonialsSection />
 
         {/* CTA Section */}
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
