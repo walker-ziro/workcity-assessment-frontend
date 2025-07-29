@@ -11,28 +11,32 @@ A comprehensive React/Next.js application for managing clients and projects, bui
 
 - **Client Management**: Create, read, update, and delete client information
 - **Project Tracking**: Manage projects with status tracking, budgets, and timelines
-- **User Authentication**: Secure login/signup system with JWT tokens
-- **Backend Integration**: REST API integration with authentication
+- **User Authentication**: Secure login/signup system with JWT tokens + demo mode
+- **Demo Authentication**: Instant demo access with pre-configured credentials
+- **Settings Panel**: Clean white-themed user settings with preferences management
+- **Backend Integration**: REST API integration with hybrid demo/real backend support
 - **Responsive Design**: Mobile-first design with Tailwind CSS
 - **Accessibility**: WCAG compliant with proper ARIA attributes
 - **TypeScript**: Full type safety throughout the application
-- **Testing**: Unit tests with Jest and React Testing Library
+- **Testing**: Comprehensive unit tests with Jest and React Testing Library (21 tests passing)
 - **Development Tools**: Built-in system status and debugging tools
 
 ### ✅ Implementation Status
 
 - [x] Authentication system with backend API integration
-- [x] Responsive navigation bar
+- [x] Demo authentication with local credentials (demo@workcity.com / demo123)
+- [x] White-themed settings modal with user preferences
+- [x] Responsive navigation bar with user dropdown
 - [x] Dashboard with client/project stats
 - [x] Client management pages
 - [x] Project management pages  
 - [x] Form validation with React Hook Form + Yup
 - [x] Loading states and error handling
 - [x] TypeScript type definitions
-- [x] Unit test setup
+- [x] Comprehensive unit test suite (21 tests passing)
 - [x] Accessibility features (ARIA labels, keyboard navigation)
 - [x] Mobile-responsive design
-- [x] Backend API integration
+- [x] Hybrid backend API integration (demo + real backend support)
 - [x] Development tools and system status monitoring
 
 ## 📋 Pages
@@ -71,22 +75,27 @@ src/
 ├── components/            # Reusable UI components
 │   ├── Button.tsx
 │   ├── Input.tsx
-│   ├── Select.tsx
 │   ├── Modal.tsx
 │   ├── LoadingSpinner.tsx
 │   ├── Navbar.tsx
+│   ├── SettingsModal.tsx      # White-themed user settings
+│   ├── UserDropdown.tsx       # User profile dropdown
+│   ├── UserProfileModal.tsx   # User profile editing
 │   ├── AddEditClientForm.tsx
-│   └── AddEditProjectForm.tsx
+│   ├── AddEditProjectForm.tsx
+│   └── __tests__/             # Component tests
 ├── hooks/                 # Custom React hooks
 │   ├── useAuth.ts
 │   ├── useClients.ts
-│   └── useProjects.ts
+│   ├── useProjects.ts
+│   └── __tests__/         # Hook tests
 ├── lib/                   # Utility functions and services
 │   ├── api.ts             # API client configuration
-│   ├── auth.ts            # Authentication service
+│   ├── auth.ts            # Authentication service (demo + real backend)
 │   ├── clients.ts         # Client service
 │   ├── projects.ts        # Project service
-│   └── utils.ts           # Helper utilities
+│   ├── utils.ts           # Helper utilities
+│   └── __tests__/         # Service tests
 └── types/                 # TypeScript type definitions
     └── index.ts
 ```
@@ -129,10 +138,24 @@ src/
 
 ### Backend Integration
 
-This frontend requires a backend API to function properly. See the [Backend Integration Guide](./BACKEND_INTEGRATION.md) for detailed setup instructions.
+This frontend supports both **demo mode** and **real backend integration**:
+
+**🎯 Demo Mode (No Backend Required):**
+- Use credentials: `demo@workcity.com` / `demo123`
+- Click "Try Demo" button for instant access
+- Fully functional offline demonstration
+- All features work without backend setup
+
+**🔌 Real Backend Integration:**
+1. Configure your backend URL in `.env.local`:
+   ```bash
+   NEXT_PUBLIC_API_URL=https://your-backend-api.com/api
+   ```
+2. Any non-demo credentials will use your real backend
+3. Seamless switching between demo and real authentication
 
 **Quick Backend Setup:**
-1. Ensure your backend server is running on `http://localhost:3001`
+1. Ensure your backend server is running (default: `http://localhost:3001`)
 2. Use the development tools (⚙️ icon) to check system status
 3. Verify API connectivity before using the application
 
@@ -156,10 +179,10 @@ In development mode, you'll see a gear icon (⚙️) in the bottom-right corner.
 
 ## 🧪 Testing
 
-The project includes comprehensive unit tests for components and hooks:
+The project includes comprehensive unit tests covering authentication, components, and core functionality:
 
 ```bash
-# Run all tests
+# Run all tests (21 tests total)
 npm test
 
 # Run tests in watch mode
@@ -168,6 +191,13 @@ npm run test:watch
 # Generate coverage report
 npm run test:coverage
 ```
+
+**Test Coverage:**
+- ✅ Authentication service (demo + real backend)
+- ✅ Custom hooks (useAuth)
+- ✅ UI components (Button)
+- ✅ Page components (Home, Login)
+- ✅ All tests passing (21/21)
 
 ## 🔧 Troubleshooting
 
@@ -186,13 +216,26 @@ npm run test:coverage
 
 ## 🔑 Authentication
 
-The application includes a functional demo authentication system:
+The application includes a hybrid authentication system supporting both demo and real backend integration:
 
-**Demo Access:**
-- Click the "Try Demo" button on the login page to automatically fill demo credentials
-- Demo authentication works locally without requiring a backend API
-- This allows you to test the application features immediately
-- For production use, the authentication system will seamlessly integrate with your backend API
+### 🎯 Demo Authentication (Instant Access)
+- **Credentials**: `demo@workcity.com` / `demo123`
+- **Quick Access**: Click the "Try Demo" button on the login page
+- **Offline Capable**: Works completely offline without backend
+- **Full Featured**: Access all application features instantly
+- **Local Storage**: Demo session persists across browser sessions
+
+### 🔌 Real Backend Authentication  
+- **API Integration**: Seamlessly connects to your backend API
+- **JWT Support**: Standard token-based authentication
+- **Environment Config**: Set `NEXT_PUBLIC_API_URL` for your backend
+- **Hybrid Mode**: Demo and real users can coexist
+
+### 🛠 Technical Implementation
+- **Smart Detection**: Automatically routes demo vs real credentials
+- **Token Management**: Separate handling for demo tokens (`demo-token-*`) and real JWT tokens
+- **Fallback Safe**: Demo mode ensures application always works
+- **Development Friendly**: No backend setup required for immediate testing
 
 ## 🎨 Design System
 
@@ -203,6 +246,14 @@ The application uses a consistent design system built with Tailwind CSS:
 - **Spacing**: Consistent 8px grid system
 - **Components**: Reusable with variant systems
 - **Responsive**: Mobile-first breakpoints
+- **Theme**: Clean white interface with accessible contrast ratios
+
+### 🎛 Settings Modal
+- **White Theme**: Clean, professional white interface
+- **User Preferences**: Notifications, language, timezone settings
+- **Privacy Controls**: Data management and privacy policy access
+- **Accessible**: Full keyboard navigation and screen reader support
+- **Responsive**: Optimized for all screen sizes
 
 ## ♿ Accessibility Features
 
