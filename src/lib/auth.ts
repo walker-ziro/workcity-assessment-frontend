@@ -69,8 +69,16 @@ export const authService = {
       // Even if the API call fails, we should still clear local storage
       console.error('Logout API call failed:', error);
     } finally {
+      // Always clear authentication data
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
+      
+      // For demo users, ensure we also clear any other potential auth-related data
+      if (typeof window !== 'undefined') {
+        // Clear any session storage as well
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('user');
+      }
     }
   },
 

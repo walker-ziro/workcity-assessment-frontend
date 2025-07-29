@@ -31,6 +31,8 @@ const Navbar: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     setMobileMenuOpen(false);
+    // Redirect to login page after logout
+    window.location.href = '/login';
   };
 
   const isPublicRoute = pathname === '/login' || pathname === '/signup';

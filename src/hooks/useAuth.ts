@@ -104,13 +104,19 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      // Ensure we always reset to unauthenticated state
       setAuthState({
         user: null,
         isLoading: false,
         isAuthenticated: false,
       });
+      
+      // Force a re-check of auth status to ensure consistency
+      setTimeout(() => {
+        checkAuthStatus();
+      }, 100);
     }
-  }, []);
+  }, [checkAuthStatus]);
 
   const updateProfile = useCallback(async (updatedUser: User) => {
     setAuthState(prev => ({ ...prev, isLoading: true }));

@@ -40,6 +40,8 @@ export default function UserDropdown({ className = '' }: UserDropdownProps) {
   const handleLogout = async () => {
     setIsOpen(false);
     await logout();
+    // Redirect to login page after logout
+    window.location.href = '/login';
   };
 
   const handleEditProfile = () => {
